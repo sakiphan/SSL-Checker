@@ -1,5 +1,6 @@
 const websiteService = require('../services/websiteService');
-const sslCheckerService = require('../services/sslCheckerService');
+// const sslCheckService = require('../services/sslCheckService');  // Bu import'a gerek kalmadı
+const logger = require('../utils/logger');
 
 // Get all websites
 const getAllWebsites = (req, res) => {
@@ -28,9 +29,9 @@ const getWebsiteById = (req, res) => {
 };
 
 // Add new website
-const addWebsite = (req, res) => {
+const addWebsite = async (req, res) => {
   try {
-    const { url, name, notificationsEnabled } = req.body;
+    const { url, name, notificationsEnabled, description, tags } = req.body;
     
     if (!url || !name) {
       return res.status(400).json({ success: false, error: 'URL and name fields are required' });
@@ -38,26 +39,18 @@ const addWebsite = (req, res) => {
     
     // Check URL format
     try {
-      new URL(url);
+      new URL(url.startsWith('http') ? url : `https://${url}`);
     } catch (e) {
       return res.status(400).json({ success: false, error: 'Please enter a valid URL' });
     }
     
-    // Check if website with same URL already exists
-    const existingWebsite = websiteService.getWebsiteByUrl(url);
-    if (existingWebsite) {
-      return res.status(400).json({ success: false, error: 'A website with this URL already exists' });
-    }
-    
-    const website = websiteService.addWebsite({
+    // Create and add website (SSL check will happen inside addWebsite)
+    const website = await websiteService.addWebsite({
       url,
       name,
+      description,
+      tags,
       notificationsEnabled: notificationsEnabled !== false
-    });
-    
-    // Check and update SSL information
-    sslCheckerService.checkWebsiteSSL(website).catch(err => {
-      console.error(`SSL check error for newly added website: ${url}`, err);
     });
     
     res.status(201).json({ success: true, website });
@@ -115,16 +108,51 @@ const deleteWebsite = (req, res) => {
 const checkSSL = async (req, res) => {
   try {
     const { id } = req.params;
+    logger.info(`SSL check requested for website ID: ${id}`);
     
     const website = websiteService.getWebsiteById(id);
     if (!website) {
-      return res.status(404).json({ success: false, error: 'Website not found' });
+      logger.warn(`Website with ID ${id} not found`);
+      return res.status(404).json({
+        success: false,
+        error: 'Website not found'
+      });
     }
     
-    const result = await sslCheckerService.checkWebsiteSSL(website);
-    res.json(result);
+    logger.info(`Starting SSL check for ${website.url}`);
+    
+    // SSL check'i URL ile yap, tüm website nesnesi değil
+    const result = await websiteService.sslCheckService.checkWebsiteSSL(website.url);
+    
+    if (result.error) {
+      logger.warn(`SSL check resulted in error: ${result.error}`);
+      // Başarılı gibi döndür ama hata mesajını da ver
+      return res.json({
+        success: false,
+        error: result.error,
+        website: website
+      });
+    }
+    
+    // SSL bilgilerini güncelleyelim
+    const updatedWebsite = websiteService.updateWebsite(id, {
+      sslDetails: result,
+      sslStatus: websiteService.getSslStatus(result),
+      lastCheck: Date.now()
+    });
+    
+    logger.info(`SSL check completed successfully for ${website.url}`);
+    res.json({
+      success: true,
+      result,
+      website: updatedWebsite
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    logger.error(`Error in checkSSL controller for website ID ${req.params.id}:`, error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 };
 

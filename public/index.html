@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SSL Monitor</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>SSL Monitor</h1>
+      <h1><i class="fas fa-shield-alt"></i> SSL Monitor</h1>
       <nav>
         <ul>
-          <li><a href="#" class="active" id="nav-websites">Websites</a></li>
-          <li><a href="#" id="nav-settings">Settings</a></li>
+          <li><a href="#" class="active" id="nav-websites"><i class="fas fa-globe"></i> Websites</a></li>
+          <li><a href="#" id="nav-settings"><i class="fas fa-cog"></i> Settings</a></li>
         </ul>
       </nav>
     </header>
@@ -23,68 +24,183 @@
       <!-- Websites Section -->
       <section id="websites-section">
         <div class="section-header">
-          <h2>SSL Monitoring List</h2>
-          <button id="add-website-btn" class="btn primary">+ Add New Website</button>
+          <h2>SSL Check</h2>
+          <button id="add-website-btn" class="btn primary"><i class="fas fa-plus"></i> Yeni Website Ekle</button>
         </div>
 
         <div class="websites-list">
           <div class="loading">Loading...</div>
-          <table id="websites-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>URL</th>
-                <th>SSL Expiry</th>
-                <th>Days Left</th>
-                <th>Last Check</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="websites-table-body">
-              <!-- Filled by JavaScript -->
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table id="websites-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>URL</th>
+                  <th>SSL Expiry</th>
+                  <th>Days Left</th>
+                  <th>Last Check</th>
+                  <th>Status</th>
+                  <th style="display: none;">Security</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="websites-table-body">
+                <!-- Filled by JavaScript -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- Settings Section -->
       <section id="settings-section" style="display: none;">
-        <h2>Application Settings</h2>
+        <div class="section-header">
+          <h2><i class="fas fa-cog"></i> Settings</h2>
+        </div>
         
-        <div class="card">
-          <h3>Telegram Notifications</h3>
-          <form id="telegram-settings-form">
+        <!-- Security Settings Card -->
+        <div class="card" style="display: none;">
+          <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+          <form id="security-settings-form" onSubmit="return false;">
             <div class="form-group">
-              <label for="bot-token">Bot Token</label>
-              <input type="text" id="bot-token" name="botToken" placeholder="Telegram Bot Token">
-            </div>
-            <div class="form-group">
-              <label for="channel-id">Channel ID</label>
-              <input type="text" id="channel-id" name="channelId" placeholder="Telegram Channel ID">
+              <label for="enable-security-check">Enable Security Checks</label>
+              <label class="switch">
+                <input type="checkbox" id="enable-security-check" name="enableSecurityCheck">
+                <span class="slider"></span>
+              </label>
+              <small>Perform additional security checks on SSL certificates (e.g. TLS version, cipher suites)</small>
             </div>
             <div class="form-actions">
-              <button type="submit" class="btn primary">Save</button>
-              <button type="button" id="test-telegram-btn" class="btn secondary">Test</button>
+              <button type="submit" class="btn primary"><i class="fas fa-save"></i> Save</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Telegram Settings -->
+        <div class="card">
+          <h3><i class="fab fa-telegram"></i> Telegram Settings</h3>
+          <form id="telegram-settings-form" onSubmit="return false;">
+            <div class="form-group">
+              <label for="telegram-enabled">Enable Telegram Notifications</label>
+              <label class="switch">
+                <input type="checkbox" id="telegram-enabled" name="telegramEnabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="telegram-token">Bot Token</label>
+              <input type="password" id="telegram-token" name="telegramBotToken" placeholder="Bot token from @BotFather">
+              <small>Create a bot using @BotFather on Telegram to get a token</small>
+            </div>
+            <div class="form-group">
+              <label for="telegram-chat-id">Chat ID</label>
+              <input type="text" id="telegram-chat-id" name="telegramChatId" placeholder="Your chat ID">
+              <small>Get your chat ID by sending a message to @userinfobot</small>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary"><i class="fas fa-save"></i> Save</button>
+              <button type="button" id="test-telegram-btn" class="btn secondary"><i class="fas fa-paper-plane"></i> Test</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Email Settings -->
+        <div class="card">
+          <h3><i class="fas fa-envelope"></i> Email Settings</h3>
+          <form id="email-settings-form" onSubmit="return false;">
+            <div class="form-group">
+              <label for="email-enabled">Enable Email Notifications</label>
+              <label class="switch">
+                <input type="checkbox" id="email-enabled" name="emailEnabled">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="email-host">SMTP Host</label>
+              <input type="text" id="email-host" name="emailHost" placeholder="smtp.example.com">
+            </div>
+            <div class="form-group">
+              <label for="email-port">SMTP Port</label>
+              <input type="number" id="email-port" name="emailPort" placeholder="587">
+            </div>
+            <div class="form-group">
+              <label for="email-secure">Use Secure Connection (TLS)</label>
+              <label class="switch">
+                <input type="checkbox" id="email-secure" name="emailSecure">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="email-user">Username</label>
+              <input type="text" id="email-user" name="emailUser" placeholder="user@example.com">
+            </div>
+            <div class="form-group">
+              <label for="email-password">Password</label>
+              <input type="password" id="email-password" name="emailPassword" placeholder="Your password or app password">
+            </div>
+            <div class="form-group">
+              <label for="email-from">From Email</label>
+              <input type="email" id="email-from" name="emailFrom" placeholder="sender@example.com">
+            </div>
+            <div class="form-group">
+              <label for="email-to">To Email</label>
+              <input type="email" id="email-to" name="emailTo" placeholder="recipient@example.com">
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary"><i class="fas fa-save"></i> Save</button>
+              <button type="button" id="test-email-btn" class="btn secondary"><i class="fas fa-paper-plane"></i> Test</button>
             </div>
           </form>
         </div>
 
         <div class="card">
-          <h3>SSL Check Schedule</h3>
-          <form id="schedule-settings-form">
+          <h3><i class="fas fa-calendar-alt"></i> SSL Check Schedule</h3>
+          <form id="schedule-settings-form" onSubmit="return false;">
             <div class="form-group">
-              <label for="cron-expression">Check Schedule (Cron)</label>
-              <input type="text" id="cron-expression" name="cronExpression" placeholder="0 0 * * *">
-              <small>Default: Every day at midnight (0 0 * * *)</small>
+              <label for="check-frequency">Check Frequency (hours)</label>
+              <input type="number" id="check-frequency" name="checkFrequency" placeholder="24" min="1" max="168">
+              <small>Default: Every 24 hours</small>
             </div>
             <div class="form-group">
-              <label>Next check:</label>
+              <label for="warning-days">Warning Days Before Expiry</label>
+              <input type="number" id="warning-days" name="warningDays" placeholder="30" min="1" max="90">
+              <small>Default: 30 days</small>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-history"></i> Last check:</label>
+              <span id="last-check-time">-</span>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-clock"></i> Next check:</label>
               <span id="next-check-time">-</span>
             </div>
             <div class="form-actions">
-              <button type="submit" class="btn primary">Save</button>
-              <button type="button" id="run-check-now-btn" class="btn secondary">Check Now</button>
+              <button type="submit" class="btn primary"><i class="fas fa-save"></i> Save</button>
+              <button type="button" id="run-check-now-btn" class="btn secondary"><i class="fas fa-sync-alt"></i> Check Now</button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Notification Preferences -->
+        <div class="card">
+          <h3><i class="fas fa-bell"></i> Notification Preferences</h3>
+          <form id="notification-settings-form" onSubmit="return false;">
+            <div class="form-group">
+              <label>Notification Channel</label>
+              <div class="radio-group">
+                <label>
+                  <input type="radio" name="notificationChannel" value="telegram"> Telegram Only
+                </label>
+                <label>
+                  <input type="radio" name="notificationChannel" value="email"> Email Only
+                </label>
+                <label>
+                  <input type="radio" name="notificationChannel" value="both"> Both Telegram & Email
+                </label>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary"><i class="fas fa-save"></i> Save</button>
             </div>
           </form>
         </div>
@@ -96,7 +212,7 @@
       <div class="modal-content">
         <span class="close">&times;</span>
         <h2 id="modal-title">Add New Website</h2>
-        <form id="website-form">
+        <form id="website-form" onSubmit="return false;">
           <input type="hidden" id="website-id">
           <div class="form-group">
             <label for="website-name">Website Name</label>
@@ -107,7 +223,15 @@
             <input type="url" id="website-url" name="url" required placeholder="https://example.com">
           </div>
           <div class="form-group">
-            <label for="notifications-enabled">Notifications</label>
+            <label for="website-description">Description (Optional)</label>
+            <textarea id="website-description" name="description" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="website-tags">Tags (Optional, comma separated)</label>
+            <input type="text" id="website-tags" name="tags" placeholder="e-commerce, production">
+          </div>
+          <div class="form-group">
+            <label for="notifications-enabled">Enable Notifications</label>
             <label class="switch">
               <input type="checkbox" id="notifications-enabled" name="notificationsEnabled" checked>
               <span class="slider round"></span>
