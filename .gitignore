@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Çevresel değişkenler
+.env
+
+# Veritabanı
+data/
+
+# Loglar
+logs/
+*.log
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# IDE'ler
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+.docker/
+docker-compose.override.yml 

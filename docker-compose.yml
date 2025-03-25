@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  ssl-monitor:
+    build: .
+    container_name: ssl-monitor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHANNEL_ID=${TELEGRAM_CHANNEL_ID}
+      - PORT=3000
+      - CHECK_INTERVAL=${CHECK_INTERVAL:-0 0 * * *}
+    volumes:
+      - ssl_data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - ssl-network
+
+volumes:
+  ssl_data:
+    driver: local
+
+networks:
+  ssl-network:
+    driver: bridge 

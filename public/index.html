@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSL Monitor</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SSL Monitor</h1>
+      <nav>
+        <ul>
+          <li><a href="#" class="active" id="nav-websites">Websites</a></li>
+          <li><a href="#" id="nav-settings">Settings</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Websites Section -->
+      <section id="websites-section">
+        <div class="section-header">
+          <h2>SSL Monitoring List</h2>
+          <button id="add-website-btn" class="btn primary">+ Add New Website</button>
+        </div>
+
+        <div class="websites-list">
+          <div class="loading">Loading...</div>
+          <table id="websites-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>URL</th>
+                <th>SSL Expiry</th>
+                <th>Days Left</th>
+                <th>Last Check</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="websites-table-body">
+              <!-- Filled by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Settings Section -->
+      <section id="settings-section" style="display: none;">
+        <h2>Application Settings</h2>
+        
+        <div class="card">
+          <h3>Telegram Notifications</h3>
+          <form id="telegram-settings-form">
+            <div class="form-group">
+              <label for="bot-token">Bot Token</label>
+              <input type="text" id="bot-token" name="botToken" placeholder="Telegram Bot Token">
+            </div>
+            <div class="form-group">
+              <label for="channel-id">Channel ID</label>
+              <input type="text" id="channel-id" name="channelId" placeholder="Telegram Channel ID">
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Save</button>
+              <button type="button" id="test-telegram-btn" class="btn secondary">Test</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>SSL Check Schedule</h3>
+          <form id="schedule-settings-form">
+            <div class="form-group">
+              <label for="cron-expression">Check Schedule (Cron)</label>
+              <input type="text" id="cron-expression" name="cronExpression" placeholder="0 0 * * *">
+              <small>Default: Every day at midnight (0 0 * * *)</small>
+            </div>
+            <div class="form-group">
+              <label>Next check:</label>
+              <span id="next-check-time">-</span>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Save</button>
+              <button type="button" id="run-check-now-btn" class="btn secondary">Check Now</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- Website Modal -->
+    <div id="website-modal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modal-title">Add New Website</h2>
+        <form id="website-form">
+          <input type="hidden" id="website-id">
+          <div class="form-group">
+            <label for="website-name">Website Name</label>
+            <input type="text" id="website-name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="website-url">Website URL</label>
+            <input type="url" id="website-url" name="url" required placeholder="https://example.com">
+          </div>
+          <div class="form-group">
+            <label for="notifications-enabled">Notifications</label>
+            <label class="switch">
+              <input type="checkbox" id="notifications-enabled" name="notificationsEnabled" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary">Save</button>
+            <button type="button" class="btn cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html> 
