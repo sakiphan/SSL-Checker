@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const db = require('../utils/db');
 
+// Get bot token and channel ID
 const getBotSettings = () => {
   const settings = db.get('settings').value();
   return {
@@ -9,6 +10,7 @@ const getBotSettings = () => {
   };
 };
 
+// Update bot settings
 const updateBotSettings = (token, channelId) => {
   db.get('settings')
     .assign({
@@ -17,13 +19,16 @@ const updateBotSettings = (token, channelId) => {
     })
     .write();
   
+  // Restart bot with new settings
   initBot();
   
   return getBotSettings();
 };
 
+// Bot instance variable
 let bot = null;
 
+// Initialize the bot
 const initBot = () => {
   const { token } = getBotSettings();
   
@@ -33,10 +38,12 @@ const initBot = () => {
   }
   
   try {
+    // Close existing bot instance
     if (bot) {
       bot.close();
     }
     
+    // Create new bot instance
     bot = new TelegramBot(token, { polling: false });
     console.log('Telegram bot started');
     
@@ -47,8 +54,10 @@ const initBot = () => {
   }
 };
 
+// Initialize bot on startup
 initBot();
 
+// Send message to Telegram channel
 const sendMessage = async (message) => {
   const { channelId, token } = getBotSettings();
   
@@ -58,6 +67,7 @@ const sendMessage = async (message) => {
   }
   
   try {
+    // Reinitialize bot if instance doesn't exist
     if (!bot) {
       initBot();
     }
@@ -71,6 +81,7 @@ const sendMessage = async (message) => {
   }
 };
 
+// Test if bot is working
 const testBot = async () => {
   const { token, channelId } = getBotSettings();
   

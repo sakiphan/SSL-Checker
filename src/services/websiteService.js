@@ -1,22 +1,22 @@
 const db = require('../utils/db');
 const { v4: uuidv4 } = require('uuid');
 
-// Tüm websiteleri getir
+// Get all websites
 const getAllWebsites = () => {
   return db.get('websites').value();
 };
 
-// ID'ye göre website getir
+// Get website by ID
 const getWebsiteById = (id) => {
   return db.get('websites').find({ id }).value();
 };
 
-// URL'ye göre website getir
+// Get website by URL
 const getWebsiteByUrl = (url) => {
   return db.get('websites').find({ url }).value();
 };
 
-// Yeni website ekle
+// Add new website
 const addWebsite = (websiteData) => {
   const website = {
     id: uuidv4(),
@@ -34,7 +34,7 @@ const addWebsite = (websiteData) => {
   return website;
 };
 
-// Website güncelle
+// Update website
 const updateWebsite = (id, updateData) => {
   updateData.updatedAt = new Date().toISOString();
   
@@ -46,7 +46,7 @@ const updateWebsite = (id, updateData) => {
   return getWebsiteById(id);
 };
 
-// SSL kontrol sonuçlarını güncelle
+// Update SSL information
 const updateSslInfo = (id, sslExpiryDate) => {
   return updateWebsite(id, {
     sslExpiryDate,
@@ -54,7 +54,7 @@ const updateSslInfo = (id, sslExpiryDate) => {
   });
 };
 
-// Bildirim kaydı ekle
+// Add notification record
 const addNotificationRecord = (id, daysRemaining) => {
   const website = getWebsiteById(id);
   if (!website) return null;
@@ -71,7 +71,7 @@ const addNotificationRecord = (id, daysRemaining) => {
   });
 };
 
-// Website sil
+// Delete website
 const deleteWebsite = (id) => {
   return db.get('websites').remove({ id }).write();
 };

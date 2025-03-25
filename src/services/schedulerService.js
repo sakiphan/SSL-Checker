@@ -4,21 +4,21 @@ const sslCheckerService = require('./sslCheckerService');
 
 let scheduledJob = null;
 
-// Zamanlanmış görevi başlat
+// Start scheduled job
 const startScheduledJob = () => {
-  // Önceki zamanlanmış görevi durdur
+  // Stop previous scheduled job
   stopScheduledJob();
   
-  // Ayarlardan cron ifadesini al
+  // Get cron expression from settings
   const settings = db.get('settings').value();
-  const cronExpression = settings.checkInterval || '0 0 * * *'; // Varsayılan olarak her gün gece yarısı
+  const cronExpression = settings.checkInterval || '0 0 * * *'; // Default to every day at midnight
   
   try {
-    // Yeni zamanlanmış görevi başlat
+    // Start new scheduled job
     scheduledJob = new cron.CronJob(
       cronExpression,
       async () => {
-        console.log(`Zamanlanmış SSL kontrol görevi başladı: ${new Date().toISOString()}`);
+        console.log(`Scheduled SSL check task started: ${new Date().toISOString()}`);
         await sslCheckerService.checkAllWebsites();
       },
       null, // onComplete
@@ -26,45 +26,45 @@ const startScheduledJob = () => {
       'Europe/Istanbul' // timezone
     );
     
-    console.log(`SSL kontrol görevi zamanlandı: ${cronExpression}`);
+    console.log(`SSL check task scheduled: ${cronExpression}`);
     return {
       success: true,
       cronExpression,
       nextRun: scheduledJob.nextDates().toJSDate()
     };
   } catch (error) {
-    console.error('Zamanlanmış görev başlatma hatası:', error);
+    console.error('Scheduled task start error:', error);
     return {
       success: false,
-      error: error.message || 'Zamanlanmış görev başlatılırken bir hata oluştu'
+      error: error.message || 'An error occurred while starting scheduled task'
     };
   }
 };
 
-// Zamanlanmış görevi durdur
+// Stop scheduled job
 const stopScheduledJob = () => {
   if (scheduledJob) {
     scheduledJob.stop();
     scheduledJob = null;
-    console.log('Zamanlanmış SSL kontrol görevi durduruldu');
+    console.log('Scheduled SSL check task stopped');
     return true;
   }
   
   return false;
 };
 
-// Zamanlanmış görev ayarlarını güncelle
+// Update schedule settings
 const updateSchedule = (cronExpression) => {
-  // Cron ifadesini ayarlarda güncelle
+  // Update cron expression in settings
   db.get('settings')
     .assign({ checkInterval: cronExpression })
     .write();
   
-  // Zamanlanmış görevi yeniden başlat
+  // Restart scheduled job
   return startScheduledJob();
 };
 
-// Zamanlanmış görev bilgisini getir
+// Get schedule information
 const getScheduleInfo = () => {
   if (!scheduledJob) {
     return {
@@ -80,13 +80,13 @@ const getScheduleInfo = () => {
   };
 };
 
-// Manuel olarak SSL kontrolü yap
+// Run SSL check manually
 const runCheckNow = async () => {
-  console.log('Manuel SSL kontrol görevi başlatıldı');
+  console.log('Manual SSL check task started');
   return await sslCheckerService.checkAllWebsites();
 };
 
-// Uygulamanın başlangıcında otomatik olarak zamanlanmış görevi başlat
+// Start scheduled job automatically on application startup
 startScheduledJob();
 
 module.exports = {

@@ -5,14 +5,18 @@ const telegramService = require('./telegramService');
 
 const checkWebsiteSSL = async (website) => {
   try {
+    // Extract domain name from URL (https://example.com -> example.com)
     const domain = new URL(website.url).hostname;
     
+    // Check SSL information
     const sslInfo = await sslChecker(domain);
     
     if (sslInfo && sslInfo.valid) {
+      // Update SSL expiration date
       const expiryDate = new Date(Date.now() + (sslInfo.daysRemaining * 24 * 60 * 60 * 1000));
       websiteService.updateSslInfo(website.id, expiryDate.toISOString());
       
+      // Check if notification should be sent
       checkAndSendNotification(website.id, sslInfo.daysRemaining);
       
       return {
@@ -88,7 +92,9 @@ const checkAndSendNotification = (websiteId, daysRemaining) => {
     return false;
   }
   
+  // Send notification if 15 days or less remaining
   if (daysRemaining <= 15) {
+    // Check if notification already sent today for this day range
     const today = moment().startOf('day');
     const alreadySentToday = website.notificationsSent.some(notification => {
       const notificationDate = moment(notification.date).startOf('day');
@@ -96,10 +102,12 @@ const checkAndSendNotification = (websiteId, daysRemaining) => {
     });
     
     if (!alreadySentToday) {
+      // Send notification
       const notificationMessage = `⚠️ SSL Certificate Alert ⚠️\n\nWebsite: ${website.name}\nURL: ${website.url}\n${daysRemaining} days remaining until SSL certificate expiration!`;
       
       telegramService.sendMessage(notificationMessage);
       
+      // Add notification record
       websiteService.addNotificationRecord(websiteId, daysRemaining);
       
       return true;

@@ -3,22 +3,22 @@ const settingsController = require('../controllers/settingsController');
 
 const router = express.Router();
 
-// Tüm ayarları getir
+// Get all settings
 router.get('/', settingsController.getSettings);
 
-// Telegram ayarlarını güncelle
+// Update Telegram settings
 router.put('/telegram', settingsController.updateTelegramSettings);
 
-// Telegram bot ayarlarını test et
+// Test Telegram bot
 router.post('/telegram/test', settingsController.testTelegramBot);
 
-// Zamanlama ayarlarını güncelle
+// Update schedule settings
 router.put('/schedule', settingsController.updateScheduleSettings);
 
-// Zamanlama bilgisini getir
+// Get schedule information
 router.get('/schedule', settingsController.getScheduleInfo);
 
-// Manuel olarak SSL kontrolü başlat
+// Run SSL check manually
 router.post('/run-check', settingsController.runSSLCheckNow);
 
 module.exports = router; 

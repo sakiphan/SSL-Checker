@@ -2,6 +2,7 @@ const db = require('../utils/db');
 const telegramService = require('../services/telegramService');
 const schedulerService = require('../services/schedulerService');
 
+// Get all settings
 const getSettings = (req, res) => {
   try {
     const settings = db.get('settings').value();
@@ -11,6 +12,7 @@ const getSettings = (req, res) => {
   }
 };
 
+// Update Telegram settings
 const updateTelegramSettings = (req, res) => {
   try {
     const { botToken, channelId } = req.body;
@@ -26,6 +28,7 @@ const updateTelegramSettings = (req, res) => {
   }
 };
 
+// Test Telegram bot
 const testTelegramBot = async (req, res) => {
   try {
     const result = await telegramService.testBot();
@@ -35,6 +38,7 @@ const testTelegramBot = async (req, res) => {
   }
 };
 
+// Update schedule settings
 const updateScheduleSettings = (req, res) => {
   try {
     const { cronExpression } = req.body;
@@ -50,6 +54,7 @@ const updateScheduleSettings = (req, res) => {
   }
 };
 
+// Get schedule information
 const getScheduleInfo = (req, res) => {
   try {
     const scheduleInfo = schedulerService.getScheduleInfo();
@@ -59,6 +64,7 @@ const getScheduleInfo = (req, res) => {
   }
 };
 
+// Run SSL check now
 const runSSLCheckNow = async (req, res) => {
   try {
     const result = await schedulerService.runCheckNow();

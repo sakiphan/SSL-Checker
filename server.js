@@ -4,13 +4,13 @@ const path = require('path');
 const fs = require('fs');
 const routes = require('./src/routes');
 
-// Data klasörünün varlığını kontrol et ve oluştur
+// Check if data directory exists and create it
 const dataDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-// Express uygulamasını oluştur
+// Create Express application
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -19,15 +19,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Rotaları uygula
+// Apply routes
 app.use(routes);
 
-// Diğer tüm istekleri ana sayfaya yönlendir (SPA için)
+// Redirect all other requests to home page (for SPA)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Sunucuyu başlat
+// Start the server
 app.listen(PORT, () => {
-  console.log(`SSL Monitor sunucusu http://localhost:${PORT} adresinde çalışıyor`);
+  console.log(`SSL Monitor server running at http://localhost:${PORT}`);
 }); 

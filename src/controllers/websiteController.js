@@ -1,7 +1,7 @@
 const websiteService = require('../services/websiteService');
 const sslCheckerService = require('../services/sslCheckerService');
 
-// Tüm websiteleri getir
+// Get all websites
 const getAllWebsites = (req, res) => {
   try {
     const websites = websiteService.getAllWebsites();
@@ -11,7 +11,7 @@ const getAllWebsites = (req, res) => {
   }
 };
 
-// Website detayını getir
+// Get website details
 const getWebsiteById = (req, res) => {
   try {
     const { id } = req.params;
@@ -27,7 +27,7 @@ const getWebsiteById = (req, res) => {
   }
 };
 
-// Yeni website ekle
+// Add new website
 const addWebsite = (req, res) => {
   try {
     const { url, name, notificationsEnabled } = req.body;
@@ -36,14 +36,14 @@ const addWebsite = (req, res) => {
       return res.status(400).json({ success: false, error: 'URL and name fields are required' });
     }
     
-    // URL formatını kontrol et
+    // Check URL format
     try {
       new URL(url);
     } catch (e) {
       return res.status(400).json({ success: false, error: 'Please enter a valid URL' });
     }
     
-    // Aynı URL ile kayıtlı website var mı kontrol et
+    // Check if website with same URL already exists
     const existingWebsite = websiteService.getWebsiteByUrl(url);
     if (existingWebsite) {
       return res.status(400).json({ success: false, error: 'A website with this URL already exists' });
@@ -55,7 +55,7 @@ const addWebsite = (req, res) => {
       notificationsEnabled: notificationsEnabled !== false
     });
     
-    // SSL bilgilerini kontrol et ve güncelle
+    // Check and update SSL information
     sslCheckerService.checkWebsiteSSL(website).catch(err => {
       console.error(`SSL check error for newly added website: ${url}`, err);
     });
@@ -66,7 +66,7 @@ const addWebsite = (req, res) => {
   }
 };
 
-// Website güncelle
+// Update website
 const updateWebsite = (req, res) => {
   try {
     const { id } = req.params;
@@ -94,7 +94,7 @@ const updateWebsite = (req, res) => {
   }
 };
 
-// Website sil
+// Delete website
 const deleteWebsite = (req, res) => {
   try {
     const { id } = req.params;
@@ -111,7 +111,7 @@ const deleteWebsite = (req, res) => {
   }
 };
 
-// Website SSL durumunu kontrol et
+// Check website SSL status
 const checkSSL = async (req, res) => {
   try {
     const { id } = req.params;

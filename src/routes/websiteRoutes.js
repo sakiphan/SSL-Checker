@@ -3,22 +3,22 @@ const websiteController = require('../controllers/websiteController');
 
 const router = express.Router();
 
-// Tüm websiteleri getir
+// Get all websites
 router.get('/', websiteController.getAllWebsites);
 
-// Website detayını getir
+// Get website by ID
 router.get('/:id', websiteController.getWebsiteById);
 
-// Yeni website ekle
+// Add new website
 router.post('/', websiteController.addWebsite);
 
-// Website güncelle
+// Update website
 router.put('/:id', websiteController.updateWebsite);
 
-// Website sil
+// Delete website
 router.delete('/:id', websiteController.deleteWebsite);
 
-// Website SSL durumunu kontrol et
+// Check website SSL
 router.get('/:id/check-ssl', websiteController.checkSSL);
 
 module.exports = router; 

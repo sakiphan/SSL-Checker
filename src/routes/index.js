@@ -4,11 +4,11 @@ const settingsRoutes = require('./settingsRoutes');
 
 const router = express.Router();
 
-// API rotalarını yapılandır
+// Configure API routes
 router.use('/api/websites', websiteRoutes);
 router.use('/api/settings', settingsRoutes);
 
-// Ana sayfa için basit bir karşılama mesajı
+// Simple welcome message for the home page
 router.get('/', (req, res) => {
   res.send(`
     <html>
@@ -52,8 +52,8 @@ router.get('/', (req, res) => {
       <body>
         <div class="container">
           <h1>SSL Monitor</h1>
-          <p>SSL sertifikalarınızı izlemenize yardımcı olan güçlü bir araç.</p>
-          <a href="/dashboard" class="btn">Giriş Yap</a>
+          <p>A powerful tool to help you monitor your SSL certificates.</p>
+          <a href="/dashboard" class="btn">Login</a>
         </div>
       </body>
     </html>
