@@ -75,7 +75,3 @@ An application that monitors SSL certificate expiration dates and sends notifica
 - Stop the application: `docker-compose down`
 - View logs: `docker-compose logs -f`
 - Restart: `docker-compose restart`
-
-## License
-
-ISC 
