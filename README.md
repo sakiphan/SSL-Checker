@@ -28,8 +28,7 @@ An application that monitors the expiration dates of SSL certificates and sends 
 
 1. Clone the project:
    ```bash
-   git clone https://github.com/sakiphan/ssl-mon.git
-   cd ssl-mon
+   git clone https://github.com/sakiphan/SSL-Checker.git
    ```
 
 2. Edit the `.env` file:
@@ -67,8 +66,7 @@ An application that monitors the expiration dates of SSL certificates and sends 
 
 2. Clone the project:
    ```bash
-   git clone https://github.com/sakiphan/ssl-mon.git
-   cd ssl-mon
+   git clone https://github.com/sakiphan/SSL-Checker.git
    ```
 
 3. Install dependencies:
